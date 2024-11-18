@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -17,7 +18,7 @@ public class Card {
     @JsonBackReference
     private Account account;  // Связь с аккаунтом
     private Long userId;
-    private Date dateExp;
+    private LocalDate dateExp;
     private BigDecimal value;
     //   private List<Operation> operations;  // Предполагается, что Operation - это другой класс
 
@@ -25,7 +26,7 @@ public class Card {
 
     }
 
-    public Card(Long id, Account account, Long userId, Date dateExp, BigDecimal value) {
+    public Card(Long id, Account account, Long userId, LocalDate dateExp, BigDecimal value) {
         this.id = id;
         this.account = account;
         this.userId = userId;
@@ -57,11 +58,11 @@ public class Card {
         this.userId = userId;
     }
 
-    public Date getDateExp() {
+    public LocalDate getDateExp() {
         return dateExp;
     }
 
-    public void setDateExp(Date dateExp) {
+    public void setDateExp(LocalDate dateExp) {
         this.dateExp = dateExp;
     }
 
