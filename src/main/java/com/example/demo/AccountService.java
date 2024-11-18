@@ -9,9 +9,9 @@ import java.util.List;
 public class AccountService {
 
         @Autowired
-        private AccountsRepository articleRepository;
+        private AccountRepository articleRepository;
 
-        public List<Accounts> getAccounts() {
+        public List<Account> getAccounts() {
             return articleRepository.findAll();
         }
 }
