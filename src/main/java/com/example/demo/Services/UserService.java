@@ -3,6 +3,8 @@ package com.example.demo.Services;
 
 import com.example.demo.Repositorys.Entity.User;
 import com.example.demo.Repositorys.Repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,14 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
+    public void someMethod() {
+        logger.info("This is an info message");
+        logger.warn("This is a warning message");
+        logger.error("This is an error message");
+    }
 
     @Autowired
     private UserRepository userRepository;
