@@ -1,25 +1,56 @@
 package com.example.demo.Repositorys.Entity;
 
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.time.Instant;
+import java.time.LocalDate;
 
+@Getter
+@Setter
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
+
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
+
+    @Size(max = 100)
+    @NotNull
+    @Column(name = "surname", nullable = false, length = 100)
     private String surname;
-    private String email;
-    private Integer age;
-    private Long accounts;
+
+    @NotNull
+    @Column(name = "date_of_birth", nullable = false)
+    private LocalDate dateOfBirth;
+
+    @Size(max = 20)
+    @Column(name = "contact_phone", length = 20)
+    private String contactPhone;
+
+    @Size(max = 255)
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "created_at")
+    private Instant createdAt;
+
+    @Column(name = "updated_at")
+    private Instant updatedAt;
+
+    @Column(name = "is_active")
+    private Boolean isActive;
+
+    @Column(name = "verification_status")
+    private Boolean verificationStatus;
 
 }
