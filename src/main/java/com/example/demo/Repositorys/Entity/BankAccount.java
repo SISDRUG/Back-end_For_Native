@@ -34,7 +34,7 @@ public class BankAccount {
     @Column(name = "date_of_creation")
     private LocalDate dateOfCreation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "currency_id")
     private Currency currency;

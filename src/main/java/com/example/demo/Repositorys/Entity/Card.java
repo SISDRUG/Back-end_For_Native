@@ -26,7 +26,7 @@ public class Card {
     @Column(name = "balance")
     private Long balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "package_id")
     private Package packageField;
