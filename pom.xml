@@ -74,7 +74,11 @@
 			<version>4.0.1</version> <!-- Убедитесь, что версия соответствует вашим требованиям -->
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
+    </dependencies>
 
 	<build>
 		<plugins>
