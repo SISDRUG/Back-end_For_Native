@@ -4,6 +4,20 @@
   <component name="AmplicodeJpaPluginProjectSettings">
     <option name="lastSelectedLanguage" value="Java" />
   </component>
+  <component name="AmplicodeLiquibaseChangesConfig">
+    <exclude-change idName="bank_accounts#id" tagName="addAutoIncrement" />
+    <exclude-change idName="bank_accounts_cards#id" tagName="addAutoIncrement" />
+    <exclude-change idName="cards#id" tagName="addAutoIncrement" />
+    <exclude-change idName="credentials#id" tagName="addAutoIncrement" />
+    <exclude-change idName="currencies#id" tagName="addAutoIncrement" />
+    <exclude-change idName="login_details#id" tagName="addAutoIncrement" />
+    <exclude-change idName="operations#id" tagName="addAutoIncrement" />
+    <exclude-change idName="packages#id" tagName="addAutoIncrement" />
+    <exclude-change idName="roles#id" tagName="addAutoIncrement" />
+    <exclude-change idName="users#id" tagName="addAutoIncrement" />
+    <exclude-change idName="credentials#email" tagName="modifyDataType" />
+    <exclude-change idName="credentials#role" tagName="modifyDataType" />
+  </component>
   <component name="AmplicodePersistenceUnitSettings">
     <persistence-units>
       <persistence-unit name="Default" defaultIncludeChangeLogFile="src/main/resources/db/changelog/db.changelog-master.xml">

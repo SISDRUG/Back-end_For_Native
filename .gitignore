@@ -31,3 +31,28 @@ build/
 
 ### VS Code ###
 .vscode/
+/webapp/.gitignore
+/webapp/src/themes/amplicodeTheme/amplicodeTheme.ts
+/logs/app.log.2025-02-13.0.gz
+/logs/app.log.2025-02-15.0.gz
+/webapp/src/App.tsx
+/webapp/src/themes/amplicodeTheme/createComponents.ts
+/webapp/src/themes/amplicodeTheme/createPalette.ts
+/webapp/src/themes/amplicodeTheme/createShadows.ts
+/webapp/src/themes/amplicodeTheme/createTypography.ts
+/src/main/resources/db/data-model-snapshot.json
+/webapp/src/dataProvider.ts
+/webapp/public/favicon.ico
+/webapp/index.html
+/webapp/src/index.tsx
+/webapp/public/manifest.json
+/webapp/public/mockServiceWorker.js
+/webapp/openapi.json
+/webapp/package.json
+/webapp/package-lock.json
+/webapp/README.md
+/webapp/src/springDataProvider.ts
+/webapp/tsconfig.json
+/webapp/src/themes/amplicodeTheme/types.d.ts
+/webapp/vite.config.ts
+/webapp/src/vite-env.d.ts
