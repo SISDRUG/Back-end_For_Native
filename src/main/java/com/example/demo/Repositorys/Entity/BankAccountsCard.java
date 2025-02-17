@@ -1,5 +1,6 @@
 package com.example.demo.Repositorys.Entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,7 @@ public class BankAccountsCard {
     private Long id;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "id", nullable = false)
     private BankAccount bankAccounts;

@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.User;
 import com.example.demo.Repositorys.Repository.UserRepository;
+import com.example.demo.Services.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,13 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/admin-ui/users")
@@ -33,6 +32,7 @@ import java.util.Optional;
 public class UserResource {
 
     private final UserRepository userRepository;
+    private final UserService userService;
 
     private final ObjectMapper objectMapper;
 
@@ -43,10 +43,9 @@ public class UserResource {
     }
 
     @GetMapping("/{id}")
-    public User getOne(@PathVariable Long id) {
-        Optional<User> userOptional = userRepository.findById(id);
-        return userOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+    public ResponseEntity<User> getOne(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/by-ids")
@@ -60,13 +59,9 @@ public class UserResource {
     }
 
     @PatchMapping("/{id}")
-    public User patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        objectMapper.readerForUpdating(user).readValue(patchNode);
-
-        return userRepository.save(user);
+    public ResponseEntity<User> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+        User user = userService.patchUser(id,patchNode);
+        return ResponseEntity.ok(user);
     }
 
     @PatchMapping

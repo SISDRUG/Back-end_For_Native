@@ -1,7 +1,7 @@
 package com.example.demo.Services;
 
-import com.example.demo.Repositorys.Entity.Operation;
-import com.example.demo.Repositorys.Repository.OperationRepository;
+import com.example.demo.Repositorys.Entity.Credential;
+import com.example.demo.Repositorys.Repository.CredentialRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,19 +13,19 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
-public class OperationService {
-    private final OperationRepository operationRepository;
+public class CredentialService {
+    private final CredentialRepository credentialRepository;
     private final ObjectMapper objectMapper;
 
-    public Operation getOperationById(Long id) {
-        return operationRepository.findById(id)
+    public Credential getCredentialById(Long id) {
+        return credentialRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
     }
 
-    public Operation patchOperation (Long id, JsonNode patchNode) throws IOException {
-        Operation operation = operationRepository.findById(id).orElseThrow(() ->
+    public Credential patchCredential (Long id, JsonNode patchNode) throws IOException {
+        Credential credential = credentialRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-        objectMapper.readerForUpdating(operation).readValue(patchNode);
-        return operationRepository.save(operation);
+        objectMapper.readerForUpdating(credential).readValue(patchNode);
+        return credentialRepository.save(credential);
     }
 }

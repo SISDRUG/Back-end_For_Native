@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.Operation;
 import com.example.demo.Repositorys.Repository.OperationRepository;
+import com.example.demo.Services.OperationService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,13 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/admin-ui/operations")
@@ -36,6 +35,8 @@ public class OperationResource {
 
     private final ObjectMapper objectMapper;
 
+    private final OperationService operationService;
+
     @GetMapping
     public PagedModel<Operation> getAll(@ParameterObject Pageable pageable) {
         Page<Operation> operations = operationRepository.findAll(pageable);
@@ -43,10 +44,10 @@ public class OperationResource {
     }
 
     @GetMapping("/{id}")
-    public Operation getOne(@PathVariable Long id) {
-        Optional<Operation> operationOptional = operationRepository.findById(id);
-        return operationOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+    public ResponseEntity<Operation> getOne(@PathVariable Long id) {
+        Operation operation = operationService.getOperationById(id);
+        return ResponseEntity.ok(operation);
+
     }
 
     @GetMapping("/by-ids")
@@ -60,13 +61,9 @@ public class OperationResource {
     }
 
     @PatchMapping("/{id}")
-    public Operation patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Operation operation = operationRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        objectMapper.readerForUpdating(operation).readValue(patchNode);
-
-        return operationRepository.save(operation);
+    public ResponseEntity<Operation> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+        Operation operation = operationService.patchOperation(id,patchNode);
+        return ResponseEntity.ok(operation);
     }
 
     @PatchMapping

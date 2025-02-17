@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.Package;
 import com.example.demo.Repositorys.Repository.PackageRepository;
+import com.example.demo.Services.PackageService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/admin-ui/packages")
@@ -30,6 +29,7 @@ import java.util.Optional;
 public class PackageResource {
 
     private final PackageRepository packageRepository;
+    private final PackageService packageService;
 
     private final ObjectMapper objectMapper;
 
@@ -40,10 +40,9 @@ public class PackageResource {
     }
 
     @GetMapping("/{id}")
-    public Package getOne(@PathVariable Long id) {
-        Optional<Package> packageOptional = packageRepository.findById(id);
-        return packageOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+    public ResponseEntity<Package> getOne(@PathVariable Long id) {
+        Package _package = packageService.getPackageById(id);
+        return ResponseEntity.ok(_package);
     }
 
     @GetMapping("/by-ids")
@@ -53,24 +52,20 @@ public class PackageResource {
 
 
     @PatchMapping("/{id}")
-    public Package patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Package package1 = packageRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        objectMapper.readerForUpdating(package1).readValue(patchNode);
-
-        return packageRepository.save(package1);
+    public ResponseEntity<Package> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+        Package _package = packageService.patchPackage(id,patchNode);
+        return ResponseEntity.ok(_package);
     }
 
 
 
     @DeleteMapping("/{id}")
     public Package delete(@PathVariable Long id) {
-        Package package1 = packageRepository.findById(id).orElse(null);
-        if (package1 != null) {
-            packageRepository.delete(package1);
+        Package _package = packageRepository.findById(id).orElse(null);
+        if (_package != null) {
+            packageRepository.delete(_package);
         }
-        return package1;
+        return _package;
     }
 
     @DeleteMapping

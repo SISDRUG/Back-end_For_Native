@@ -1,5 +1,6 @@
 package com.example.demo.Repositorys.Entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,7 +32,7 @@ public class Credential {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.RESTRICT)
     @JoinColumn(name = "user_id")
     private User user;

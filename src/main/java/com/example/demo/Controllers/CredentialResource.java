@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.Credential;
 import com.example.demo.Repositorys.Repository.CredentialRepository;
+import com.example.demo.Services.CredentialService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,13 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/admin-ui/credentials")
@@ -33,6 +32,7 @@ import java.util.Optional;
 public class CredentialResource {
 
     private final CredentialRepository credentialRepository;
+    private final CredentialService credentialService;
 
     private final ObjectMapper objectMapper;
 
@@ -43,10 +43,9 @@ public class CredentialResource {
     }
 
     @GetMapping("/{id}")
-    public Credential getOne(@PathVariable Long id) {
-        Optional<Credential> credentialOptional = credentialRepository.findById(id);
-        return credentialOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+    public ResponseEntity<Credential> getOne(@PathVariable Long id) {
+        Credential credential = credentialService.getCredentialById(id);
+        return ResponseEntity.ok(credential);
     }
 
     @GetMapping("/by-ids")
@@ -60,13 +59,9 @@ public class CredentialResource {
     }
 
     @PatchMapping("/{id}")
-    public Credential patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Credential credential = credentialRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        objectMapper.readerForUpdating(credential).readValue(patchNode);
-
-        return credentialRepository.save(credential);
+    public ResponseEntity<Credential> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+        Credential credential = credentialService.patchCredential(id,patchNode);
+        return ResponseEntity.ok(credential);
     }
 
     @PatchMapping

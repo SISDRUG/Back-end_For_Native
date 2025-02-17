@@ -1,7 +1,7 @@
 package com.example.demo.Services;
 
-import com.example.demo.Repositorys.Entity.Operation;
-import com.example.demo.Repositorys.Repository.OperationRepository;
+import com.example.demo.Repositorys.Entity.Currency;
+import com.example.demo.Repositorys.Repository.CurrencyRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -13,19 +13,19 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 @Service
-public class OperationService {
-    private final OperationRepository operationRepository;
+public class CurrencyService {
+    private final CurrencyRepository currencyRepository;
     private final ObjectMapper objectMapper;
 
-    public Operation getOperationById(Long id) {
-        return operationRepository.findById(id)
+    public Currency getCurrencyById(Long id) {
+        return currencyRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
     }
 
-    public Operation patchOperation (Long id, JsonNode patchNode) throws IOException {
-        Operation operation = operationRepository.findById(id).orElseThrow(() ->
+    public Currency patchCurrency (Long id, JsonNode patchNode) throws IOException {
+        Currency currency = currencyRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-        objectMapper.readerForUpdating(operation).readValue(patchNode);
-        return operationRepository.save(operation);
+        objectMapper.readerForUpdating(currency).readValue(patchNode);
+        return currencyRepository.save(currency);
     }
 }

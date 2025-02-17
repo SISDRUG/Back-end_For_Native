@@ -2,6 +2,7 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.Card;
 import com.example.demo.Repositorys.Repository.CardRepository;
+import com.example.demo.Services.CardService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -19,13 +20,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/rest/admin-ui/cards")
@@ -36,6 +35,8 @@ public class CardResource {
 
     private final ObjectMapper objectMapper;
 
+    private final CardService cardService;
+
     @GetMapping
     public PagedModel<Card> getAll(@ParameterObject Pageable pageable) {
         Page<Card> cards = cardRepository.findAll(pageable);
@@ -43,10 +44,9 @@ public class CardResource {
     }
 
     @GetMapping("/{id}")
-    public Card getOne(@PathVariable Long id) {
-        Optional<Card> cardOptional = cardRepository.findById(id);
-        return cardOptional.orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
+    public ResponseEntity<Card> getOne(@PathVariable Long id) {
+        Card card = cardService.getCardById(id);
+        return ResponseEntity.ok(card);
     }
 
     @GetMapping("/by-ids")
@@ -60,13 +60,9 @@ public class CardResource {
     }
 
     @PatchMapping("/{id}")
-    public Card patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
-        Card card = cardRepository.findById(id).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
-
-        objectMapper.readerForUpdating(card).readValue(patchNode);
-
-        return cardRepository.save(card);
+    public ResponseEntity<Card> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+        Card card = cardService.patchCard(id,patchNode);
+        return ResponseEntity.ok(card);
     }
 
     @PatchMapping
