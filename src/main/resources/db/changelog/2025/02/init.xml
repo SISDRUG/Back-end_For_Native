@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1739895827261-1" author="sisdrug (generated)">
+        <createTable tableName="bank_accounts">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="balance" type="BIGINT"/>
+            <column name="type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="NOW()" name="date_of_creation" type="date"/>
+            <column name="currency_id" type="BIGINT"/>
+            <column name="account_status" type="BOOLEAN" defaultValue="TRUE"/>
+            <column name="last_operation_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-2" author="sisdrug (generated)">
+        <createTable tableName="bank_accounts_cards">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="card_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-3" author="sisdrug (generated)">
+        <createTable tableName="bank_accounts_credentials">
+            <column name="bank_account_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="credentials_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-4" author="sisdrug (generated)">
+        <createTable tableName="cards">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column defaultValueNumeric="0" name="balance" type="BIGINT"/>
+            <column name="package_id" type="BIGINT"/>
+            <column name="year_of_exp" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="month_of_exp" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="card_number" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column defaultValue="active" name="card_status" type="VARCHAR(20)"/>
+            <column name="holder_name" type="VARCHAR(150)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="is_virtual" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-5" author="sisdrug (generated)">
+        <createTable tableName="credentials">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-6" author="sisdrug (generated)">
+        <createTable tableName="currencies">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="cur_abbreviation" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cur_scale" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cur_rate" type="DECIMAL(10, 4)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-7" author="sisdrug (generated)">
+        <createTable tableName="login_details">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="email" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_login_date" type="date"/>
+            <column defaultValueNumeric="0" name="login_attempts" type="BIGINT"/>
+            <column name="user_status" type="BIGINT"/>
+            <column name="password_hash_salt" type="BIGINT"/>
+            <column defaultValueBoolean="false" name="two_factor_auth_enabled" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-8" author="sisdrug (generated)">
+        <createTable tableName="operations">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="currency_id" type="BIGINT"/>
+            <column name="card_id" type="BIGINT"/>
+            <column name="recipient_details" type="BIGINT"/>
+            <column name="value" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="date_time" type="timestamp"/>
+            <column name="operation_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValue="pending" name="status" type="VARCHAR(20)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="reference_number" type="BIGINT">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-9" author="sisdrug (generated)">
+        <createTable tableName="packages">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueNumeric="0.00" name="cashback" type="DECIMAL(5, 2)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-10" author="sisdrug (generated)">
+        <createTable tableName="roles">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="role" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-11" author="sisdrug (generated)">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" unique="true"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_of_birth" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="contact_phone" type="VARCHAR(20)"/>
+            <column name="address" type="VARCHAR(255)"/>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="created_at" type="timestamp"/><column defaultValueComputed="CURRENT_TIMESTAMP" name="updated_at" type="timestamp"/>
+            <column defaultValueBoolean="true" name="is_active" type="BOOLEAN"/>
+            <column defaultValueBoolean="false" name="verification_status" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1739895827261-12" author="sisdrug (generated)">
+        <addUniqueConstraint columnNames="bank_account_id, credentials_id"
+                             constraintName="IX_pk_bank_accounts_credentials" tableName="bank_accounts_credentials"/>
+    </changeSet>
+    <changeSet id="1739895827261-13" author="sisdrug (generated)">
+        <addUniqueConstraint columnNames="id, card_id" constraintName="id" tableName="bank_accounts_cards"/>
+    </changeSet>
+    <changeSet id="1739895827261-14" author="sisdrug (generated)">
+        <addUniqueConstraint columnNames="user_id, email" constraintName="user_id" tableName="credentials"/>
+    </changeSet>
+    <changeSet id="1739895827261-15" author="sisdrug (generated)">
+        <createIndex indexName="card_id" tableName="bank_accounts_cards">
+            <column name="card_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-37" author="sisdrug (generated)">
+        <addUniqueConstraint tableName="roles" columnNames="role" constraintName="roles_role_unique"/>
+    </changeSet>
+    <changeSet id="1739895827261-16" author="sisdrug (generated)">
+        <createIndex indexName="credentials_ibfk_2" tableName="roles">
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-17" author="sisdrug (generated)">
+        <createIndex indexName="credentials_id" tableName="bank_accounts_credentials">
+            <column name="credentials_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-18" author="sisdrug (generated)">
+        <createIndex indexName="email" tableName="credentials">
+            <column name="email"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-19" author="sisdrug (generated)">
+        <createIndex indexName="idx_bank_accounts_currency" tableName="bank_accounts">
+            <column name="currency_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-20" author="sisdrug (generated)">
+        <createIndex indexName="idx_cards_package" tableName="cards">
+            <column name="package_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-21" author="sisdrug (generated)">
+        <createIndex indexName="idx_credentials_user" tableName="credentials">
+            <column name="user_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-22" author="sisdrug (generated)">
+        <createIndex indexName="idx_operations_card" tableName="operations">
+            <column name="card_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-23" author="sisdrug (generated)">
+        <createIndex indexName="idx_operations_currency" tableName="operations">
+            <column name="currency_id"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-24" author="sisdrug (generated)">
+        <createIndex indexName="idx_operations_date" tableName="operations">
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="date_time"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-25" author="sisdrug (generated)">
+        <createIndex indexName="role" tableName="credentials">
+            <column name="role"/>
+        </createIndex>
+    </changeSet>
+    <changeSet id="1739895827261-26" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="card_id" baseTableName="bank_accounts_cards"
+                                 constraintName="bank_accounts_cards_ibfk_1" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="cards"/>
+    </changeSet>
+    <changeSet id="1739895827261-27" author="sisdrug (generated)"><addForeignKeyConstraint baseColumnNames="id" baseTableName="bank_accounts_cards"
+                                                                                           constraintName="bank_accounts_cards_ibfk_2" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                                                                           referencedColumnNames="id" referencedTableName="bank_accounts"/>
+    </changeSet>
+    <changeSet id="1739895827261-28" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="bank_account_id" baseTableName="bank_accounts_credentials"
+                                 constraintName="bank_accounts_credentials_ibfk_1" onDelete="RESTRICT"
+                                 onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="bank_accounts"/>
+    </changeSet>
+    <changeSet id="1739895827261-29" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="credentials_id" baseTableName="bank_accounts_credentials"
+                                 constraintName="bank_accounts_credentials_ibfk_2" onDelete="RESTRICT"
+                                 onUpdate="RESTRICT" referencedColumnNames="id" referencedTableName="credentials"/>
+    </changeSet>
+    <changeSet id="1739895827261-30" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="bank_accounts"
+                                 constraintName="bank_accounts_ibfk_1" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="currencies"/>
+    </changeSet>
+    <changeSet id="1739895827261-31" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="package_id" baseTableName="cards" constraintName="cards_ibfk_1"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="packages"/>
+    </changeSet>
+    <changeSet id="1739895827261-32" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="credentials"
+                                 constraintName="credentials_ibfk_1" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1739895827261-33" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="role" baseTableName="credentials" constraintName="credentials_ibfk_2"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="role"
+                                 referencedTableName="roles"/>
+    </changeSet>
+    <changeSet id="1739895827261-34" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="email" baseTableName="credentials" constraintName="credentials_ibfk_3"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="email"
+                                 referencedTableName="login_details"/>
+    </changeSet>
+    <changeSet id="1739895827261-35" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="currency_id" baseTableName="operations"
+                                 constraintName="operations_ibfk_1" onDelete="RESTRICT" onUpdate="RESTRICT"
+                                 referencedColumnNames="id" referencedTableName="currencies"/>
+    </changeSet>
+    <changeSet id="1739895827261-36" author="sisdrug (generated)">
+        <addForeignKeyConstraint baseColumnNames="card_id" baseTableName="operations" constraintName="operations_ibfk_2"
+                                 onDelete="RESTRICT" onUpdate="RESTRICT" referencedColumnNames="id"
+                                 referencedTableName="cards"/>
+    </changeSet>
+
+</databaseChangeLog>
