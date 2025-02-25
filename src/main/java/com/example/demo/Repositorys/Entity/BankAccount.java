@@ -54,4 +54,5 @@ public class BankAccount {
     @Column(name = "last_operation_date")
     private Instant lastOperationDate;
 
+
 }

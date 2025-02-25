@@ -1,7 +1,9 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.BankAccount;
+import com.example.demo.Repositorys.Entity.Currency;
 import com.example.demo.Repositorys.Repository.BankAccountRepository;
+import com.example.demo.Repositorys.Repository.CurrencyRepository;
 import com.example.demo.Services.BankAccountService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +34,7 @@ import java.util.List;
 public class BankAccountResource {
 
     private final BankAccountRepository bankAccountRepository;
+    private final CurrencyRepository currencyRepository;
 
     private final BankAccountService bankAccountService;
 
@@ -54,13 +57,21 @@ public class BankAccountResource {
         return bankAccountRepository.findAllById(ids);
     }
 
+    /// TODO Перенести логику в сервис
     @PostMapping
-    public BankAccount create(@RequestBody @Valid BankAccount bankAccount) {
-        return bankAccountRepository.save(bankAccount);
+    public ResponseEntity<BankAccount> create(@RequestBody @Valid JsonNode patchNode) throws Exception {
+        BankAccount bankAccount = new BankAccount();
+        objectMapper.readerForUpdating(bankAccount).readValue(patchNode);
+        Long currencyId = patchNode.path("currencyId").asLong();
+        Currency currency = currencyRepository.findById(currencyId)
+                .orElseThrow(() -> new Exception("Currency not found for ID: " + currencyId));
+        bankAccount.setCurrency(currency);
+
+        return ResponseEntity.ok(bankAccountRepository.save(bankAccount));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BankAccount> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {
+    public ResponseEntity<BankAccount> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws Exception {
         BankAccount bankAccount = bankAccountService.patchAccount(id,patchNode);
         return ResponseEntity.ok(bankAccount);
     }

@@ -56,3 +56,4 @@ build/
 /webapp/src/themes/amplicodeTheme/types.d.ts
 /webapp/vite.config.ts
 /webapp/src/vite-env.d.ts
+/logs/app.log.2025-02-18.0.gz
