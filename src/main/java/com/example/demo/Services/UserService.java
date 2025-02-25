@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.time.Instant;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +28,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `%s` not found".formatted(id)));
         objectMapper.readerForUpdating(user).readValue(patchNode);
+        user.setUpdatedAt(Instant.now());
         return userRepository.save(user);
     }
 }

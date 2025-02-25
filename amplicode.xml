@@ -16,6 +16,8 @@
     <exclude-change idName="users#id" tagName="addAutoIncrement" />
     <exclude-change idName="credentials#role" tagName="modifyDataType" />
     <exclude-change idName="credentials#email" tagName="modifyDataType" />
+    <exclude-change idName="credentials_ibfk_2" tagName="createIndex" />
+    <exclude-change idName="bank_accounts#id" tagName="addAutoIncrement" />
   </component>
   <component name="AmplicodePersistenceUnitSettings">
     <persistence-units>

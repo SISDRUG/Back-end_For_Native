@@ -1,5 +1,7 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Repositorys.Entity.BankAccount;
+import com.example.demo.Repositorys.Entity.Currency;
 import com.example.demo.Repositorys.Entity.User;
 import com.example.demo.Repositorys.Repository.UserRepository;
 import com.example.demo.Services.UserService;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,8 +56,13 @@ public class UserResource {
         return userRepository.findAllById(ids);
     }
 
+    /// TODO перенести в сервис
     @PostMapping
-    public User create(@RequestBody @Valid User user) {
+    public User create(@RequestBody @Valid JsonNode patchNode) throws IOException {
+        User user = new User();
+        objectMapper.readerForUpdating(user).readValue(patchNode);
+        user.setCreatedAt(Instant.now());
+        user.setUpdatedAt(Instant.now());
         return userRepository.save(user);
     }
 
@@ -70,6 +78,7 @@ public class UserResource {
 
         for (User user : users) {
             objectMapper.readerForUpdating(user).readValue(patchNode);
+            user.setUpdatedAt(Instant.now());
         }
 
         List<User> resultUsers = userRepository.saveAll(users);
