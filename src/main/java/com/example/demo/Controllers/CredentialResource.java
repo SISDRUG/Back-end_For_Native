@@ -1,7 +1,16 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Repositorys.Entity.Card;
 import com.example.demo.Repositorys.Entity.Credential;
+import com.example.demo.Repositorys.Entity.Currency;
+import com.example.demo.Repositorys.Entity.LoginDetail;
+import com.example.demo.Repositorys.Entity.Operation;
+import com.example.demo.Repositorys.Entity.Role;
+import com.example.demo.Repositorys.Entity.User;
 import com.example.demo.Repositorys.Repository.CredentialRepository;
+import com.example.demo.Repositorys.Repository.LoginDetailRepository;
+import com.example.demo.Repositorys.Repository.RoleRepository;
+import com.example.demo.Repositorys.Repository.UserRepository;
 import com.example.demo.Services.CredentialService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +43,9 @@ public class CredentialResource {
 
     private final CredentialRepository credentialRepository;
     private final CredentialService credentialService;
+    private final UserRepository userRepository;
+    private final LoginDetailRepository loginDetailRepository;
+    private final RoleRepository roleRepository;
 
     private final ObjectMapper objectMapper;
 
@@ -54,8 +67,22 @@ public class CredentialResource {
     }
 
     @PostMapping
-    public Credential create(@RequestBody @Valid Credential credential) {
-        return credentialRepository.save(credential);
+    public ResponseEntity<Credential> create(@RequestBody @Valid JsonNode patchNode) throws Exception {
+        Credential credential = new Credential();
+        objectMapper.readerForUpdating(credential).readValue(patchNode);
+        Long userId = patchNode.path("userId").asLong();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new Exception("User not found for ID: " + userId));
+        credential.setUser(user);
+        Long loginDetailId = patchNode.path("loginDetailsId").asLong();
+        LoginDetail loginDetail = loginDetailRepository.findById(loginDetailId)
+                .orElseThrow(() -> new Exception("LoginDetail not found for ID: " + loginDetailId));
+        credential.setEmail(loginDetail);
+        Long roleId = patchNode.path("roleId").asLong();
+        Role role = roleRepository.findById(roleId)
+                .orElseThrow(() -> new Exception("Role not found for ID: " + roleId));
+        credential.setRole(role);
+        return ResponseEntity.ok(credentialRepository.save(credential));
     }
 
     @PatchMapping("/{id}")

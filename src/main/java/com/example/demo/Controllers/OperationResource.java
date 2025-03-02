@@ -1,6 +1,11 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Repositorys.Entity.BankAccount;
+import com.example.demo.Repositorys.Entity.Card;
+import com.example.demo.Repositorys.Entity.Currency;
 import com.example.demo.Repositorys.Entity.Operation;
+import com.example.demo.Repositorys.Repository.CardRepository;
+import com.example.demo.Repositorys.Repository.CurrencyRepository;
 import com.example.demo.Repositorys.Repository.OperationRepository;
 import com.example.demo.Services.OperationService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,6 +38,8 @@ import java.util.List;
 public class OperationResource {
 
     private final OperationRepository operationRepository;
+    private final CurrencyRepository currencyRepository;
+    private final CardRepository cardRepository;
 
     private final ObjectMapper objectMapper;
 
@@ -56,8 +64,19 @@ public class OperationResource {
     }
 
     @PostMapping
-    public Operation create(@RequestBody @Valid Operation operation) {
-        return operationRepository.save(operation);
+    public ResponseEntity<Operation> create(@RequestBody @Valid JsonNode patchNode) throws Exception {
+        Operation operation = new Operation();
+        objectMapper.readerForUpdating(operation).readValue(patchNode);
+        Long currencyId = patchNode.path("currencyId").asLong();
+        Currency currency = currencyRepository.findById(currencyId)
+                .orElseThrow(() -> new Exception("Currency not found for ID: " + currencyId));
+        operation.setCurrency(currency);
+        Long cardId = patchNode.path("cardId").asLong();
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new Exception("Card not found for ID: " + cardId));
+        operation.setCard(card);
+        operation.setDateTime(Instant.now());
+        return ResponseEntity.ok(operationRepository.save(operation));
     }
 
     @PatchMapping("/{id}")
