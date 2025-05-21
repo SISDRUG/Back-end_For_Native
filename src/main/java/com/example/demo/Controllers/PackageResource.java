@@ -1,6 +1,7 @@
 package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.Package;
+import com.example.demo.Repositorys.Entity.User;
 import com.example.demo.Repositorys.Repository.PackageRepository;
 import com.example.demo.Services.PackageService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,12 +16,15 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -50,6 +54,13 @@ public class PackageResource {
         return packageRepository.findAllById(ids);
     }
 
+    @PostMapping
+    public Package create(@RequestBody @Valid JsonNode patchNode) throws IOException {
+        Package _package = new Package();
+        objectMapper.readerForUpdating(_package).readValue(patchNode);
+
+        return packageRepository.save(_package);
+    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Package> patch(@PathVariable Long id, @RequestBody JsonNode patchNode) throws IOException {

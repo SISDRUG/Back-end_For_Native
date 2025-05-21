@@ -11,6 +11,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,6 +44,12 @@ public class RoleResource {
     public PagedModel<Role> getAll(@ParameterObject Pageable pageable) {
         Page<Role> roles = roleRepository.findAll(pageable);
         return new PagedModel<>(roles);
+    }
+
+    @GetMapping("/me")
+    public Authentication whoAmI() {
+        SecurityContext context = SecurityContextHolder.getContext();
+        return context.getAuthentication();
     }
 
     @GetMapping("/{id}")

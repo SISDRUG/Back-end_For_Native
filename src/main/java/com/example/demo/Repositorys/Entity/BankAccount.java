@@ -1,5 +1,6 @@
 package com.example.demo.Repositorys.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,6 +42,7 @@ public class BankAccount {
     private String type;
 
     @Column(name = "date_of_creation")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfCreation;
 
     @ManyToOne(fetch = FetchType.EAGER)

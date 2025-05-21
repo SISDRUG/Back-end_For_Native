@@ -37,14 +37,53 @@ services:
       start_period: 10s
       retries: 5
     entrypoint: /bin/sh -c "chmod 600 /pgadmin4/pgpass; /entrypoint.sh;"
-  keycloak:
-    image: quay.io/keycloak/keycloak:26.2.0
+#  keycloak:
+#    image: quay.io/keycloak/keycloak:26.2.0
+#    restart: "no"
+#    command:
+#      - "start"
+#      - "--auto-build"
+#      - "--db"
+#      - "postgres"
+#      - "--proxy"
+#      - "edge"
+#      - "--http-enabled"
+#      - "true"
+#      - "--import-realm"
+#    ports:
+#      - "9080:9080"
+#    volumes:
+#      - /Users/sisdrug/Desktop/repo/src/main/resources/keycloak/import:/opt/keycloak/data/import
+#    environment:
+#      KC_HTTP_PORT: 9080
+#      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+#      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+#      KC_DB_URL: jdbc:postgresql://postgres:5432/bank
+#      KC_DB_USERNAME: postgres
+#      KC_DB_PASSWORD: 12345
+#      KC_DB_SCHEMA: public
+#      KC_FEATURES: preview
+#      KC_HEALTH_ENABLED: "true"
+#      KC_HOSTNAME_STRICT: "false"
+#      KC_HOSTNAME_STRICT_HTTPS: "false"
+#      KC_MIGRATION_ACTION: import
+#      KC_MIGRATION_PROVIDER: singleFile
+#      KC_MIGRATION_FILE: /opt/keycloak/data/import/realm-export.json
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    healthcheck:
+#      test:
+#        [ "CMD-SHELL", "{ exec 3<>/dev/tcp/localhost/9000 && echo -e \"GET /health/ready HTTP/1.1\nhost: localhost:9000\n\" >&3 && timeout --preserve-status 1 cat <&3 | grep -m 1 -q 'status.*UP'; }" ]
+#      interval: 10s
+#      timeout: 5s
+#      start_period: 60s
+#      retries: 5
+  my-keycloak:
+    image: quay.io/keycloak/keycloak:latest
     restart: "no"
     command:
-      - "start"
-      - "--http-enabled"
-      - "true"
-      - "--import-realm"
+      - "start-dev"
     ports:
       - "9080:9080"
     volumes:
@@ -53,20 +92,18 @@ services:
       KC_HTTP_PORT: 9080
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
-#      KC_DB_URL: jdbc:postgresql://postgres:5432/bank
-#      KC_DB_USERNAME: postgres
-#      KC_DB_PASSWORD: 12345
-#      KC_DB_SCHEMA: public
-#      KC_FEATURES: preview
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: bank
+      KC_DB_USERNAME: postgres
+      KC_DB_PASSWORD: 12345
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME_STRICT_HTTPS: "false"
       KC_MIGRATION_ACTION: import
       KC_MIGRATION_PROVIDER: singleFile
       KC_MIGRATION_FILE: /opt/keycloak/data/import/realm-export.json
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test:
         [ "CMD-SHELL", "{ exec 3<>/dev/tcp/localhost/9000 && echo -e \"GET /health/ready HTTP/1.1\nhost: localhost:9000\n\" >&3 && timeout --preserve-status 1 cat <&3 | grep -m 1 -q 'status.*UP'; }" ]
@@ -74,6 +111,9 @@ services:
       timeout: 5s
       start_period: 60s
       retries: 5
+    depends_on:
+      postgres:
+        condition: service_healthy
 volumes:
   postgres_data:
 
