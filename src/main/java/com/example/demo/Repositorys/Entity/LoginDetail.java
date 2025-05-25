@@ -1,5 +1,7 @@
 package com.example.demo.Repositorys.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,10 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import jakarta.persistence.FetchType;
 
 import java.time.LocalDate;
 
@@ -20,6 +25,7 @@ import java.time.LocalDate;
 @Table(name = "login_details", indexes = {
         @Index(name = "email", columnList = "email", unique = true)
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class LoginDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +43,7 @@ public class LoginDetail {
     private String password;
 
     @Column(name = "last_login_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate lastLoginDate;
 
     @Column(name = "login_attempts")
@@ -51,4 +58,7 @@ public class LoginDetail {
     @Column(name = "two_factor_auth_enabled")
     private Boolean twoFactorAuthEnabled;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

@@ -1,4 +1,3 @@
-
 CREATE TABLE bank_accounts (
   id BIGINT NOT NULL,
    balance BIGINT DEFAULT 0 NULL,
@@ -94,7 +93,7 @@ CREATE TABLE roles (
 );
 
 CREATE TABLE users (
-  id BIGINT NOT NULL,
+  id BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY,
    name VARCHAR(100) NOT NULL,
    surname VARCHAR(100) NOT NULL,
    date_of_birth date NOT NULL,

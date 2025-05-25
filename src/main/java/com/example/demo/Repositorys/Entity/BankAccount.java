@@ -1,5 +1,7 @@
 package com.example.demo.Repositorys.Entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,8 +26,10 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "bank_accounts", indexes = {
-        @Index(name = "idx_bank_accounts_currency", columnList = "currency_id")
+        @Index(name = "idx_bank_accounts_currency", columnList = "currency_id"),
+        @Index(name = "idx_bank_accounts_user", columnList = "user_id")
 })
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class BankAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +45,7 @@ public class BankAccount {
     private String type;
 
     @Column(name = "date_of_creation")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfCreation;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -53,6 +58,5 @@ public class BankAccount {
 
     @Column(name = "last_operation_date")
     private Instant lastOperationDate;
-
 
 }

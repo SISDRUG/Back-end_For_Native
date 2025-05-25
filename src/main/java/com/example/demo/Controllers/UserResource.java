@@ -3,6 +3,8 @@ package com.example.demo.Controllers;
 import com.example.demo.Repositorys.Entity.BankAccount;
 import com.example.demo.Repositorys.Entity.Currency;
 import com.example.demo.Repositorys.Entity.User;
+import com.example.demo.Repositorys.Repository.CredentialRepository;
+import com.example.demo.Repositorys.Repository.LoginDetailRepository;
 import com.example.demo.Repositorys.Repository.UserRepository;
 import com.example.demo.Services.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +14,9 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -36,7 +41,8 @@ public class UserResource {
 
     private final UserRepository userRepository;
     private final UserService userService;
-
+    private final CredentialRepository credentialRepository;
+    private final LoginDetailRepository loginDetailRepository;
     private final ObjectMapper objectMapper;
 
     @GetMapping
@@ -88,16 +94,32 @@ public class UserResource {
     }
 
     @DeleteMapping("/{id}")
-    public User delete(@PathVariable Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user != null) {
-            userRepository.delete(user);
-        }
-        return user;
+    @Transactional
+    public ResponseEntity<User> delete(@PathVariable Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        
+        System.out.println("Удаляем креды пользователя: " + id);
+        credentialRepository.deleteByUserId(id);
+
+        System.out.println("Удаляем логины пользователя: " + id);
+        loginDetailRepository.deleteByUserIdNative(id);
+        System.out.println("Удаление логинов завершено");
+        
+        userRepository.delete(user);
+        
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping
+    @Transactional
     public void deleteMany(@RequestParam List<Long> ids) {
+        // Сначала удаляем связанные креды и логины для всех пользователей
+        for (Long id : ids) {
+            credentialRepository.deleteByUserId(id);
+            loginDetailRepository.deleteByUserIdNative(id);
+        }
+        // Затем удаляем пользователей
         userRepository.deleteAllById(ids);
     }
 }

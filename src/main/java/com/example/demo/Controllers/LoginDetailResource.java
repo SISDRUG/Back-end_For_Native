@@ -2,6 +2,8 @@ package com.example.demo.Controllers;
 
 import com.example.demo.Repositorys.Entity.LoginDetail;
 import com.example.demo.Repositorys.Repository.LoginDetailRepository;
+import com.example.demo.Repositorys.Repository.CredentialRepository;
+import com.example.demo.Repositorys.Repository.UserRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -33,7 +37,8 @@ import java.util.Optional;
 public class LoginDetailResource {
 
     private final LoginDetailRepository loginDetailRepository;
-
+    private final CredentialRepository credentialRepository;
+    private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
     @GetMapping
@@ -56,6 +61,13 @@ public class LoginDetailResource {
 
     @PostMapping
     public LoginDetail create(@RequestBody @Valid LoginDetail loginDetail) {
+        // Устанавливаем значения по умолчанию
+        loginDetail.setLastLoginDate(java.time.LocalDate.now());
+        loginDetail.setLoginAttempts(0L);
+        loginDetail.setUserStatus(1L); // 1 - активный пользователь
+        loginDetail.setPasswordHashSalt(0L); // По умолчанию без соли
+        loginDetail.setTwoFactorAuthEnabled(false); // 2FA выключен по умолчанию
+        
         return loginDetailRepository.save(loginDetail);
     }
 
@@ -84,12 +96,27 @@ public class LoginDetailResource {
     }
 
     @DeleteMapping("/{id}")
-    public LoginDetail delete(@PathVariable Long id) {
-        LoginDetail loginDetail = loginDetailRepository.findById(id).orElse(null);
-        if (loginDetail != null) {
-            loginDetailRepository.delete(loginDetail);
+    @Transactional
+    public ResponseEntity<LoginDetail> delete(@PathVariable Long id) {
+        LoginDetail loginDetail = loginDetailRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LoginDetail not found"));
+        
+        // Получаем ID пользователя перед удалением
+        Long userId = loginDetail.getUser() != null ? loginDetail.getUser().getId() : null;
+        
+        // Удаляем логин
+        loginDetailRepository.delete(loginDetail);
+        
+        // Если был связанный пользователь, удаляем его креды и самого пользователя
+        if (userId != null) {
+            System.out.println("Удаляем креды пользователя: " + userId);
+            credentialRepository.deleteByUserId(userId);
+            
+            System.out.println("Удаляем пользователя: " + userId);
+            userRepository.deleteById(userId);
         }
-        return loginDetail;
+        
+        return ResponseEntity.ok(loginDetail);
     }
 
     @DeleteMapping
