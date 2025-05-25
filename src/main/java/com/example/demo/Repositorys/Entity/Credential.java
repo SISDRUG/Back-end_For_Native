@@ -16,15 +16,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "credentials", indexes = {
         @Index(name = "role", columnList = "role"),
-        @Index(name = "user_id", columnList = "user_id, email", unique = true),
+        @Index(name = "user_id", columnList = "user_id, login_details_id", unique = true),
         @Index(name = "idx_credentials_user", columnList = "user_id"),
-        @Index(name = "email", columnList = "email")
+        @Index(name = "login_details_id", columnList = "login_details_id")
 })
 public class Credential {
     @Id
@@ -39,13 +40,14 @@ public class Credential {
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "email", nullable = false, referencedColumnName = "email")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "login_details_id", nullable = false)
     private LoginDetail email;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @OnDelete(action = OnDeleteAction.RESTRICT)
-    @JoinColumn(name = "role", referencedColumnName = "role")
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Role role;
 
 }

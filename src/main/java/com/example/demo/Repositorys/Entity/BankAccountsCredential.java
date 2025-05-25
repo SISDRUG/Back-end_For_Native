@@ -31,7 +31,7 @@ public class BankAccountsCredential {
 
     @MapsId("credentialsId")
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDelete(action = OnDeleteAction.RESTRICT)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "credentials_id", nullable = false)
     private Credential credentials;
 
